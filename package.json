@@ -1,6 +1,6 @@
 {
   "name": "enet-api",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "eNet Smart Home utility CLI.",
   "author": "Lawrence Bensaid (lawrencebensaid@icloud.com)",
   "keywords": [],
@@ -22,6 +22,7 @@
     "chalk": "^4.1.0",
     "commander": "^7.1.0",
     "crypto": "^1.0.1",
+    "request": "^2.88.2",
     "request-promise-native": "^1.0.9"
   }
 }
