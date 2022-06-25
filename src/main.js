@@ -44,20 +44,28 @@ program
 
 program
   .command("auth <username> <password> <hostname>")
-  .description("authenticate with eNet", {
+  .description("authenticate with eNet server", {
     hostname: "Hostname or IP",
     username: "Username",
     password: "Password"
   })
   .action(async (username, password, hostname) => {
+    if (getISID()) {
+      console.log(`\nYou are already authenticated with '${getHost()}' as '${getUser()}'!`);
+      console.log(`  Use 'enet deauth' to deauthenticate first.\n`);
+      return;
+    }
     try {
       const enet = new ENet(hostname);
       const token = await enet.authenticate(username, password);
       console.log("Authentication successful");
       setISID(token);
       setHost(hostname);
+      setUser(username);
     } catch (error) {
-      console.log("Error:", error.message);
+      if (error) {
+        console.log("Error:", error);
+      }
     }
   });
 
@@ -65,19 +73,21 @@ program
 
 program
   .command("deauth")
-  .description("Authenticate with eNet interface.", {
-    hostname: "Hostname or IP",
-    username: "Username",
-    password: "Password"
-  })
+  .description("Deauthenticate from eNet server")
   .action(async () => {
     try {
-      const enet = new ENet(hostname);
       const token = getISID();
-      if (token === null) throw new Error("Not authenticated");
+      if (token === null) throw new Error("Cannot deauthenticate: Not authenticated");
+      const host = getHost();
+      if (host === null) throw new Error("Cannot deauthenticate: No host to deauthenticate from");
+      const enet = new ENet(host, token);
       await enet.deauthenticate();
+      setISID(null);
+      console.log("Deauthentication successful");
     } catch (error) {
-      console.log("Error:", error.message);
+      if (error) {
+        console.log("Error:", error);
+      }
     }
   });
 
@@ -106,7 +116,9 @@ program
 //           throw new Error(`Argument '${command}' is invalid. Allowed choices are 'up' or 'down'.`);
 //       }
 //     } catch (error) {
-//       console.log("Error:", error.message);
+//       if (error) {
+//         console.log("Error:", error);
+//       }
 //     }
 //   });
 
@@ -138,7 +150,9 @@ program
           throw new Error(`Argument '${command}' is invalid. Allowed choices are 'ls'.`);
       }
     } catch (error) {
-      console.log("Error:", error.message);
+      if (error) {
+        console.log("Error:", error);
+      }
     }
   });
 
@@ -146,7 +160,7 @@ program
 
 program
   .command("project <command> [project]")
-  .description("manage devices", {
+  .description("manage projects", {
     command: "(options: 'ls' or 'inspect')",
     project: "UID if the project"
   })
@@ -195,7 +209,9 @@ program
           throw new Error(`Argument '${command}' is invalid. Allowed choices are 'ls' or 'inspect'.`);
       }
     } catch (error) {
-      console.log("error:", error.message);
+      if (error) {
+        console.log("Error:", error);
+      }
     }
 
   });
@@ -215,7 +231,7 @@ program
       const client = new ENetClient();
       if (fuid === "ls") {
         await (async () => {
-          const enet = new ENet(getHost(), getISID())
+          const enet = new ENet(getHost(), getISID());
           const response = await enet.getDevices(deviceLsIncludeState);
           if (json) {
             if (pretty) {
@@ -391,7 +407,9 @@ program
           throw new Error(`Argument '${command}' is invalid. Allowed choices are 'inspect', 'functions', 'status', 'state', 'on', 'off', 'set' or 'get'.`);
       }
     } catch (error) {
-      console.log("Error:", error.message);
+      if (error) {
+        console.log("Error:", error);
+      }
     }
   });
 
@@ -399,7 +417,7 @@ program
 
 program
   .command("function <fuid> <action>")
-  .description("manage devices", {
+  .description("manage device functions", {
     fuid: "Device function UID.",
     action: "",
   })
@@ -418,7 +436,9 @@ program
           break;
       }
     } catch (error) {
-      console.log(error.message);
+      if (error) {
+        console.log("Error:", error);
+      }
     }
   });
 
@@ -443,7 +463,9 @@ program
           break;
       }
     } catch (error) {
-      console.log(error.message);
+      if (error) {
+        console.log("Error:", error);
+      }
     }
   });
 
@@ -470,7 +492,9 @@ program
           break;
       }
     } catch (error) {
-      console.log(error.message);
+      if (error) {
+        console.log("Error:", error);
+      }
     }
   });
 
@@ -562,6 +586,12 @@ function setHost(value) {
   fs.writeFileSync(cpath, JSON.stringify(data));
 }
 
+function setUser(value) {
+  const data = getCache();
+  data.u = value;
+  fs.writeFileSync(cpath, JSON.stringify(data));
+}
+
 function getISID() {
   try {
     return JSON.parse(fs.readFileSync(cpath)).s;
@@ -573,6 +603,14 @@ function getISID() {
 function getHost() {
   try {
     return JSON.parse(fs.readFileSync(cpath)).h;
+  } catch (error) {
+    return null;
+  }
+}
+
+function getUser() {
+  try {
+    return JSON.parse(fs.readFileSync(cpath)).u;
   } catch (error) {
     return null;
   }
