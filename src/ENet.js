@@ -73,7 +73,11 @@ module.exports = class ENet {
         }
 
       } catch (error) {
-        reject(error.message);
+        if (error && error.statusCode) {
+          reject(error.statusMessage);
+        } else {
+          reject(error);
+        }
       }
     });
   }
@@ -91,7 +95,7 @@ module.exports = class ENet {
     return new Promise(async (resolve, reject) => {
       try {
         if (sessionID === null) throw new Error("Missing token");
-        reject();
+        resolve();
       } catch (error) {
         reject(error.message);
       }
