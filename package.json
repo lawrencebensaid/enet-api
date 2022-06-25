@@ -1,6 +1,6 @@
 {
   "name": "enet-api",
-  "version": "1.2.2",
+  "version": "1.3.0",
   "description": "eNet Smart Home utility CLI.",
   "author": "Lawrence Bensaid (lawrencebensaid@icloud.com)",
   "keywords": [],
@@ -11,12 +11,12 @@
   "bugs": {
     "url": "http://github.com/lawrencebensaid/enet-api/issues"
   },
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "start": "src/main.js"
+    "start": "dist/main.js"
   },
   "bin": {
-    "enet": "src/main.js"
+    "enet": "dist/main.js"
   },
   "dependencies": {
     "chalk": "^4.1.0",
