@@ -2,12 +2,20 @@
 
 API and CLI for eNet smart home.
 
+**To install the CLI on your device**
+
+`$ npm install -g enet-api`
+
+**To add the API to your project as dependency**
+
+`$ npm install enet-api`
+
 ## Implementing the API
 
-```
+```js
 const { ENet } = require("enet-api");
 
-(() => {
+(async () => {
 
   // Authenticate with eNet server
   const enet = new ENet("192.168.0.7");
