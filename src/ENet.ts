@@ -19,7 +19,6 @@ class ENet {
   }
 
 
-
   /**
    * Authenticate with eNet server.
    * 
@@ -94,7 +93,6 @@ class ENet {
   }
 
 
-
   /**
    * Location list
    * 
@@ -118,43 +116,41 @@ class ENet {
   }
 
 
-
-  /**
-   * 
-   * @returns 
-   */
-  getDevices(deviceLsIncludeState: boolean = false) {
-    return new Promise(async (resolve, reject) => {
-      const client = new ENetClient(this.hostname, this.token);
-      try {
-        var data = [];
-        const response = await this.getLocations(true);
-        for (const location of response) {
-          for (let device of location.deviceUIDs) {
-            device.locationName = location.name;
-            if (deviceLsIncludeState) {
-              var functions = parseDeviceFunctions(await client.getDevicesWithParameterFilter([device.deviceUID]));
-              for (const func of functions) {
-                if (func.typeID.includes(".IOO") && func.io === "OUT") {
-                  const values = await client.getCurrentValuesFromOutputDeviceFunction(func.uid) || [];
-                  if (values.length > 0 && typeof values[0].value === "boolean") {
-                    device.state = values[0].value;
-                  }
-                  break;
-                }
-              }
-            }
-            data.push(device);
-          }
-        }
-        resolve(data);
-      } catch (error) {
-        console.log(error);
-        reject(error.message);
-      }
-    });
-  }
-
+  // /**
+  //  * 
+  //  * @returns 
+  //  */
+  // getDevices(deviceLsIncludeState: boolean = false) {
+  //   return new Promise(async (resolve, reject) => {
+  //     const client = new ENetClient(this.hostname, this.token);
+  //     try {
+  //       var data = [];
+  //       const response = await this.getLocations(true);
+  //       for (const location of response) {
+  //         for (let device of location.deviceUIDs) {
+  //           device.locationName = location.name;
+  //           if (deviceLsIncludeState) {
+  //             var functions = parseDeviceFunctions(await client.getDevicesWithParameterFilter([device.deviceUID]));
+  //             for (const func of functions) {
+  //               if (func.typeID.includes(".IOO") && func.io === "OUT") {
+  //                 const values = await client.getCurrentValuesFromOutputDeviceFunction(func.uid) || [];
+  //                 if (values.length > 0 && typeof values[0].value === "boolean") {
+  //                   device.state = values[0].value;
+  //                 }
+  //                 break;
+  //               }
+  //             }
+  //           }
+  //           data.push(device);
+  //         }
+  //       }
+  //       resolve(data);
+  //     } catch (error) {
+  //       console.log(error);
+  //       reject(error.message);
+  //     }
+  //   });
+  // }
 
 
   /**
@@ -175,7 +171,6 @@ class ENet {
   }
 
 
-
   /**
    * 
    * @param {string} deviceUID 
@@ -188,7 +183,6 @@ class ENet {
         .catch(reject);
     });
   }
-
 
 
   /**
@@ -212,7 +206,6 @@ class ENet {
       throw error;
     }
   }
-
 
 
   /**
@@ -243,7 +236,6 @@ class ENet {
 }
 
 
-
 /**
  * Helper function
  * 
@@ -262,7 +254,6 @@ function locationsFlat(data: ENetLocation[]) {
   }
   return array;
 }
-
 
 
 /**
