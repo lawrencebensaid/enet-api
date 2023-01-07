@@ -1,3 +1,3 @@
-import * as ENet from './ENet'
-import * as ENetClient from './ENetClient'
+import ENet from './ENet'
+import ENetClient from './ENetClient'
 export { ENet, ENetClient };
